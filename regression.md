@@ -5,8 +5,7 @@ Here we perform basic regresison analysis
 
 ## Using statsmodels
 
-This follows the example in Kevin Sheppard's Introduction to Python (https://www.kevinsheppard.com/files/teaching/python/notes/python_introduction_2021.pdf) Chapter 21.1 Regression. The statsmodels package has good documentation here:
-https://www.statsmodels.org/stable/index.html
+This follows the example in Kevin Sheppard's [Introduction to Python](https://www.kevinsheppard.com/files/teaching/python/notes/python_introduction_2021.pdf) Chapter 21.1 Regression. The statsmodels package has good documentation [here](https://www.statsmodels.org/stable/index.html).
 
 
 
@@ -14,7 +13,6 @@ https://www.statsmodels.org/stable/index.html
 ```python
 import statsmodels.api as sm 
 d = sm.datasets.statecrime.load_pandas()
-
 ```
 
 The data are now loaded into `d`. That is a dataset and you can see the actual spreadsheet using the `.data` attribute.
@@ -22,9 +20,6 @@ The data are now loaded into `d`. That is a dataset and you can see the actual s
 
 ```python
 d.data
-
-
-
 ```
 
 
@@ -584,7 +579,7 @@ d.data
 
 
 
-This `d` dataset object has more attributes (see details here: https://www.statsmodels.org/stable/datasets/index.html#available-datasets) amonst others they have been pre-partitioned into exogenous and endogenous variables.
+This `d` dataset object has more attributes (see details [here](https://www.statsmodels.org/stable/datasets/index.html#available-datasets)) amonst others they have been pre-partitioned into exogenous and endogenous variables.
 
 
 ```python
@@ -760,7 +755,7 @@ print(res.summary())
     Model:                            OLS   Adj. R-squared (uncentered):              0.908
     Method:                 Least Squares   F-statistic:                              126.9
     Date:                Thu, 17 Aug 2023   Prob (F-statistic):                    1.45e-24
-    Time:                        17:17:41   Log-Likelihood:                         -101.53
+    Time:                        20:55:50   Log-Likelihood:                         -101.53
     No. Observations:                  51   AIC:                                      211.1
     Df Residuals:                      47   BIC:                                      218.8
     Df Model:                           4                                                  
@@ -786,7 +781,334 @@ print(res.summary())
 
 This is very much like a standard regression output you would see from most statistical computing packages. One thing you may note is that there are two degrees of freedom (Df) information. The model and residual degrees of freedom. The model Df tells you how many explanatory variables were used (here 4) and the residual Df is the number of observations minus the number of estimated coefficients, here 51 - 4 = 47. The latter is the usual definition of degrees of freedom in the context of regression models. 
 
+What you will notice here is that the regression did not include a constant. That is because our matrix with explanatory variabbles (`d.exog`) did not contain any. Often statistical procedures will automatically include a constant (like the `lm` function in R), but this one does not. So we need to actively add a constant. This is done with the add_constant function in statsmodels: `sm.add_constant(d.exog)`. So let's re-specify and reestimate the model with a constant.
+
 
 ```python
+mod = sm.OLS(d.endog,sm.add_constant(d.exog))
+res = mod.fit()
+print(res.summary())
+```
 
+                                OLS Regression Results                            
+    ==============================================================================
+    Dep. Variable:                 murder   R-squared:                       0.813
+    Model:                            OLS   Adj. R-squared:                  0.797
+    Method:                 Least Squares   F-statistic:                     50.08
+    Date:                Thu, 17 Aug 2023   Prob (F-statistic):           3.42e-16
+    Time:                        21:11:25   Log-Likelihood:                -95.050
+    No. Observations:                  51   AIC:                             200.1
+    Df Residuals:                      46   BIC:                             209.8
+    Df Model:                           4                                         
+    Covariance Type:            nonrobust                                         
+    ==============================================================================
+                     coef    std err          t      P>|t|      [0.025      0.975]
+    ------------------------------------------------------------------------------
+    const        -44.1024     12.086     -3.649      0.001     -68.430     -19.774
+    urban          0.0109      0.015      0.707      0.483      -0.020       0.042
+    poverty        0.4121      0.140      2.939      0.005       0.130       0.694
+    hs_grad        0.3059      0.117      2.611      0.012       0.070       0.542
+    single         0.6374      0.070      9.065      0.000       0.496       0.779
+    ==============================================================================
+    Omnibus:                        1.618   Durbin-Watson:                   2.507
+    Prob(Omnibus):                  0.445   Jarque-Bera (JB):                0.831
+    Skew:                          -0.220   Prob(JB):                        0.660
+    Kurtosis:                       3.445   Cond. No.                     5.80e+03
+    ==============================================================================
+    
+    Notes:
+    [1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+    [2] The condition number is large, 5.8e+03. This might indicate that there are
+    strong multicollinearity or other numerical problems.
+    
+
+The `res` object we used to store the regression results in can be thought of as a shelf full of interesting information. The `summary()` method gave as the big hits from that shelof of information. But you can access all possible individual elemenst from that shelf. To find out what is on that shelf you can again use the `dir(res)` command.
+
+
+```python
+dir(res)
+```
+
+
+
+
+    ['HC0_se',
+     'HC1_se',
+     'HC2_se',
+     'HC3_se',
+     '_HCCM',
+     '__class__',
+     '__delattr__',
+     '__dict__',
+     '__dir__',
+     '__doc__',
+     '__eq__',
+     '__format__',
+     '__ge__',
+     '__getattribute__',
+     '__gt__',
+     '__hash__',
+     '__init__',
+     '__init_subclass__',
+     '__le__',
+     '__lt__',
+     '__module__',
+     '__ne__',
+     '__new__',
+     '__reduce__',
+     '__reduce_ex__',
+     '__repr__',
+     '__setattr__',
+     '__sizeof__',
+     '__str__',
+     '__subclasshook__',
+     '__weakref__',
+     '_abat_diagonal',
+     '_cache',
+     '_data_attr',
+     '_data_in_cache',
+     '_get_robustcov_results',
+     '_is_nested',
+     '_use_t',
+     '_wexog_singular_values',
+     'aic',
+     'bic',
+     'bse',
+     'centered_tss',
+     'compare_f_test',
+     'compare_lm_test',
+     'compare_lr_test',
+     'condition_number',
+     'conf_int',
+     'conf_int_el',
+     'cov_HC0',
+     'cov_HC1',
+     'cov_HC2',
+     'cov_HC3',
+     'cov_kwds',
+     'cov_params',
+     'cov_type',
+     'df_model',
+     'df_resid',
+     'diagn',
+     'eigenvals',
+     'el_test',
+     'ess',
+     'f_pvalue',
+     'f_test',
+     'fittedvalues',
+     'fvalue',
+     'get_influence',
+     'get_prediction',
+     'get_robustcov_results',
+     'info_criteria',
+     'initialize',
+     'k_constant',
+     'llf',
+     'load',
+     'model',
+     'mse_model',
+     'mse_resid',
+     'mse_total',
+     'nobs',
+     'normalized_cov_params',
+     'outlier_test',
+     'params',
+     'predict',
+     'pvalues',
+     'remove_data',
+     'resid',
+     'resid_pearson',
+     'rsquared',
+     'rsquared_adj',
+     'save',
+     'scale',
+     'ssr',
+     'summary',
+     'summary2',
+     't_test',
+     't_test_pairwise',
+     'tvalues',
+     'uncentered_tss',
+     'use_t',
+     'wald_test',
+     'wald_test_terms',
+     'wresid']
+
+
+
+Here are a few examples of what you could extract from `res`.
+
+
+```python
+print("\nConfidence intervals for coefficient estimates")
+print(res.conf_int())
+
+print("\nAIC information criterion")
+print(res.aic)
+
+print("\nRegression fitted values")
+print(res.fittedvalues)
+```
+
+    
+    Confidence intervals for coefficient estimates
+                     0          1
+    const   -68.430362 -19.774469
+    urban    -0.020104   0.041880
+    poverty   0.129901   0.694399
+    hs_grad   0.070059   0.541795
+    single    0.495840   0.778910
+    
+    AIC information criterion
+    200.10018977656853
+    
+    Regression fitted values
+    state
+    Alabama                  7.240371
+    Alaska                   4.305784
+    Arizona                  5.709436
+    Arkansas                 6.047842
+    California               5.103820
+    Colorado                 3.010261
+    Connecticut              3.734915
+    Delaware                 5.426470
+    District of Columbia    21.810162
+    Florida                  6.040398
+    Georgia                  7.752260
+    Hawaii                   5.380746
+    Idaho                    1.495336
+    Illinois                 5.253719
+    Indiana                  4.585734
+    Iowa                     1.839635
+    Kansas                   3.940428
+    Kentucky                 5.193414
+    Louisiana                8.856294
+    Maine                    2.869247
+    Maryland                 4.940706
+    Massachusetts            4.287778
+    Michigan                 6.504815
+    Minnesota                1.930016
+    Mississippi             10.726801
+    Missouri                 5.211376
+    Montana                  3.126335
+    Nebraska                 2.345950
+    Nevada                   5.782611
+    New Hampshire            0.276226
+    New Jersey               3.958383
+    New Mexico               7.779862
+    New York                 7.810840
+    North Carolina           5.765752
+    North Dakota             0.319488
+    Ohio                     6.435508
+    Oklahoma                 5.768319
+    Oregon                   4.197993
+    Pennsylvania             4.325676
+    Rhode Island             4.934577
+    South Carolina           7.229609
+    South Dakota             2.836099
+    Tennessee                5.722915
+    Texas                    5.842075
+    Utah                     0.585888
+    Vermont                  2.200749
+    Virginia                 2.775294
+    Washington               3.374663
+    West Virginia            3.735693
+    Wisconsin                3.237746
+    Wyoming                  0.333984
+    dtype: float64
+    
+
+## Robust standard errors
+
+The info in the previous regression output highlights that "Covariance Type: nonrobust". This means that the coefficient standard errors have been calculated with teh standard formula which assumes that error terms are iid distributed (also see the warning note [1]). You will have learned that it is almost standard practice to calculate heteroskedasticity-robust (or heteroskedasticity and autocorrelation-robust) standard errors. Often they are referred to as White (Newey-West standard errors). If you want these you will have to let the `.fit` method know. 
+
+
+```python
+res_white=mod.fit(cov_type='HC0')
+print(res_white.summary())
+```
+
+                                OLS Regression Results                            
+    ==============================================================================
+    Dep. Variable:                 murder   R-squared:                       0.813
+    Model:                            OLS   Adj. R-squared:                  0.797
+    Method:                 Least Squares   F-statistic:                     31.45
+    Date:                Thu, 17 Aug 2023   Prob (F-statistic):           1.23e-12
+    Time:                        21:21:19   Log-Likelihood:                -95.050
+    No. Observations:                  51   AIC:                             200.1
+    Df Residuals:                      46   BIC:                             209.8
+    Df Model:                           4                                         
+    Covariance Type:                  HC0                                         
+    ==============================================================================
+                     coef    std err          z      P>|z|      [0.025      0.975]
+    ------------------------------------------------------------------------------
+    const        -44.1024     11.873     -3.715      0.000     -67.373     -20.832
+    urban          0.0109      0.013      0.814      0.416      -0.015       0.037
+    poverty        0.4121      0.115      3.595      0.000       0.187       0.637
+    hs_grad        0.3059      0.111      2.763      0.006       0.089       0.523
+    single         0.6374      0.082      7.733      0.000       0.476       0.799
+    ==============================================================================
+    Omnibus:                        1.618   Durbin-Watson:                   2.507
+    Prob(Omnibus):                  0.445   Jarque-Bera (JB):                0.831
+    Skew:                          -0.220   Prob(JB):                        0.660
+    Kurtosis:                       3.445   Cond. No.                     5.80e+03
+    ==============================================================================
+    
+    Notes:
+    [1] Standard Errors are heteroscedasticity robust (HC0)
+    [2] The condition number is large, 5.8e+03. This might indicate that there are
+    strong multicollinearity or other numerical problems.
+    
+
+
+```python
+The regression output illustrates that this did not change the coefficient estimates but only the standard errors of the coefficient estimates.
+
+If you wanted to implement Newey-West standard errors (here using 2 lags) to make standard errors robust to the presence of autocorrelation you would use the following. 
+```
+
+
+```python
+res_NW=mod.fit(cov_type='HAC',cov_kwds={'maxlags':2})
+print(res_NW.summary())
+```
+
+                                OLS Regression Results                            
+    ==============================================================================
+    Dep. Variable:                 murder   R-squared:                       0.813
+    Model:                            OLS   Adj. R-squared:                  0.797
+    Method:                 Least Squares   F-statistic:                     36.41
+    Date:                Thu, 17 Aug 2023   Prob (F-statistic):           1.03e-13
+    Time:                        21:51:20   Log-Likelihood:                -95.050
+    No. Observations:                  51   AIC:                             200.1
+    Df Residuals:                      46   BIC:                             209.8
+    Df Model:                           4                                         
+    Covariance Type:                  HAC                                         
+    ==============================================================================
+                     coef    std err          z      P>|z|      [0.025      0.975]
+    ------------------------------------------------------------------------------
+    const        -44.1024     12.488     -3.532      0.000     -68.578     -19.627
+    urban          0.0109      0.014      0.804      0.422      -0.016       0.037
+    poverty        0.4121      0.114      3.604      0.000       0.188       0.636
+    hs_grad        0.3059      0.116      2.634      0.008       0.078       0.534
+    single         0.6374      0.080      7.922      0.000       0.480       0.795
+    ==============================================================================
+    Omnibus:                        1.618   Durbin-Watson:                   2.507
+    Prob(Omnibus):                  0.445   Jarque-Bera (JB):                0.831
+    Skew:                          -0.220   Prob(JB):                        0.660
+    Kurtosis:                       3.445   Cond. No.                     5.80e+03
+    ==============================================================================
+    
+    Notes:
+    [1] Standard Errors are heteroscedasticity and autocorrelation robust (HAC) using 2 lags and without small sample correction
+    [2] The condition number is large, 5.8e+03. This might indicate that there are
+    strong multicollinearity or other numerical problems.
+    
+
+
+```python
+Againthe parameter estimates remain unchanged and the standard errors do change. 
+
+This particular application of Newey-West standard erros, of course, makes no sense as these are no time-series data. This is therefore just another example that not everything you can do in your statistical software actually makes sense. You need to keep your thinking hat on all the time.
 ```
