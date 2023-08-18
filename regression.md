@@ -822,7 +822,7 @@ print(res.summary())
     strong multicollinearity or other numerical problems.
     
 
-The `res` object we used to store the regression results in can be thought of as a shelf full of interesting information. The `summary()` method gave as the big hits from that shelof of information. But you can access all possible individual elemenst from that shelf. To find out what is on that shelf you can again use the `dir(res)` command.
+The `res` object we used to store the regression results in can be thought of as a shelf full of interesting information. The `summary()` method gave as the big hits from that shelf of of information. But you can access all possible individual elemenst from that shelf. To find out what is on that shelf you can again use the `dir(res)` command.
 
 
 ```python
@@ -1021,7 +1021,7 @@ print(res.fittedvalues)
 
 ## Robust standard errors
 
-The info in the previous regression output highlights that "Covariance Type: nonrobust". This means that the coefficient standard errors have been calculated with teh standard formula which assumes that error terms are iid distributed (also see the warning note [1]). You will have learned that it is almost standard practice to calculate heteroskedasticity-robust (or heteroskedasticity and autocorrelation-robust) standard errors. Often they are referred to as White (Newey-West standard errors). If you want these you will have to let the `.fit` method know. 
+The info in the previous regression output highlights that "Covariance Type: nonrobust". This means that the coefficient standard errors have been calculated with the standard formula which assumes that error terms are iid distributed (also see the warning note [1] in the regression summary output). You will have learned that it is almost standard practice to calculate heteroskedasticity-robust (or heteroskedasticity and autocorrelation-robust) standard errors. Often they are referred to as White (Newey-West standard errors). If you want these you will have to let the `.fit` method know. 
 
 
 ```python
@@ -1061,12 +1061,9 @@ print(res_white.summary())
     strong multicollinearity or other numerical problems.
     
 
-
-```python
-The regression output illustrates that this did not change the coefficient estimates but only the standard errors of the coefficient estimates.
+The regression output illustrates that this did not change the coefficient estimates but only the standard errors of the coefficient estimates changed. They are now White standard errors.
 
 If you wanted to implement Newey-West standard errors (here using 2 lags) to make standard errors robust to the presence of autocorrelation you would use the following. 
-```
 
 
 ```python
@@ -1106,9 +1103,6 @@ print(res_NW.summary())
     strong multicollinearity or other numerical problems.
     
 
-
-```python
-Againthe parameter estimates remain unchanged and the standard errors do change. 
+Again the parameter estimates remain unchanged and the standard errors do change. 
 
 This particular application of Newey-West standard erros, of course, makes no sense as these are no time-series data. This is therefore just another example that not everything you can do in your statistical software actually makes sense. You need to keep your thinking hat on all the time.
-```
